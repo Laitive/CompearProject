@@ -1,0 +1,5 @@
+{["MainCode -AICode.dlls or -AICode.pys"],["../MainCode/change.py"]}
+{["MainCode -WEB.main or -WEBmain],["../MainCode/change.py"]}
+{[MainCode -dlls.Projects],["../MainCode/dllsChangeMain.py"]}
+{[AI -Dll.AI],["../DLL.AI/gets.py"],["../DLL.AI/getsCppProject.py"]}
+{[AI -HardwareCode -transMainCode ],["HardwareCodeRoot"],["../HardwareCode/transMainCode-Interaction.py"]}
