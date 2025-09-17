@@ -9,7 +9,7 @@ while CMDpassword.umv != 0:
         print('this is user mode \n this mode can not break this project')
     
     # 显示当前配置信息
-    #print(f"当前配置: {CMDpassword.config}")
+    print(f"当前配置: {CMDpassword.config}")
     
     # 获取用户输入
     a = str(input("控制代码: "))
@@ -37,14 +37,9 @@ while CMDpassword.umv != 0:
             print('切换为用户模式')
     elif(a == 'change-password'):
         pwd = str(input('请输入旧密码: '))
-        if(pwd != CMDpassword.password):
-            print('旧密码错误')
-        else:
-            pwd = str(input('请输入新密码: '))
-            CMDpassword.password = pwd
-            CMDpassword.config['password'] = pwd  # 更新配置中的密码
-            CMDpassword.save_all_config(CMDpassword.config)  # 立即保存所有配置
-            print('密码修改成功')
+        new_pwd = str(input('请输入新密码: '))
+        success, message = CMDpassword.change_password(pwd, new_pwd)
+        print(message)
     elif(a == 'show-config'):
         # 显示所有配置项
         print("配置项列表:")

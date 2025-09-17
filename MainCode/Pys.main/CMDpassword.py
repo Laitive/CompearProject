@@ -2,7 +2,8 @@ import json
 import os
 
 # 文件路径
-PASSWORD_FILE = 'password.json'
+# 使用绝对路径指向正确的位置
+PASSWORD_FILE = os.path.join(os.path.dirname(__file__), 'password.json')
 
 # 读取所有配置函数
 def read_all_config():
@@ -50,6 +51,33 @@ def save_password(password, config=None):
     config['password'] = password
     # 保存所有配置
     save_all_config(config)
+
+# 处理密码修改的函数
+def change_password(old_password, new_password):
+    """修改密码的处理函数
+    
+    Args:
+        old_password: 旧密码
+        new_password: 新密码
+        
+    Returns:
+        tuple: (是否成功, 消息)
+    """
+    # 在函数开始处声明所有需要使用的全局变量
+    global password, config
+    
+    # 验证旧密码
+    if old_password != password:
+        return False, "旧密码错误"
+    
+    # 更新密码
+    password = new_password
+    config['password'] = new_password
+    
+    # 保存所有配置
+    save_all_config(config)
+    
+    return True, "密码修改成功"
 
 # 初始化变量
 config = read_all_config()  # 读取所有配置
