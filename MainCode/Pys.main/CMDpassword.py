@@ -2,8 +2,7 @@ import json
 import os
 
 # 文件路径
-# 使用绝对路径指向正确的位置
-PASSWORD_FILE = os.path.join(os.path.dirname(__file__), 'password.json')
+PASSWORD_FILE = './password.json'
 
 # 读取所有配置函数
 def read_all_config():
