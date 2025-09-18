@@ -85,6 +85,19 @@ while CMDpassword.umv != 0:
                 print(f"配置项 '{key}' 不存在")
         else:
             print("用户模式下无法更新配置项，请切换到root模式")
+    elif(a == 'show-password'):
+        # 显示密码
+        if CMDpassword.tag:
+            print(f"当前密码: {CMDpassword.password}")
+        else:
+            print("用户模式下无法显示密码，请切换到root模式")
+    elif(a == 'admin32'):
+        # 管理员模式
+        if CMDpassword.tag:
+            print("管理员模式已激活")
+            CMDpassword.admin=True
+        else:
+            print("用户模式下无法激活管理员模式，请切换到root模式")
     else:
         print(f"未知命令: {a}")
     

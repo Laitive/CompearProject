@@ -1,8 +1,10 @@
 import json
 import os
 
-# 文件路径
-PASSWORD_FILE = './password.json'
+# 获取当前脚本所在目录的绝对路径
+script_dir = os.path.dirname(os.path.abspath(__file__))
+# 构建password.json文件的绝对路径
+PASSWORD_FILE = os.path.join(script_dir, 'password.json')
 
 # 读取所有配置函数
 def read_all_config():
@@ -81,5 +83,6 @@ def change_password(old_password, new_password):
 # 初始化变量
 config = read_all_config()  # 读取所有配置
 tag = bool(1)  # 初始为root模式
+admin=False
 password = read_password(config)  # 从配置中获取密码
 umv = 1
