@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>消息管理</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .unread-count {
+            display: inline-block;
+            background-color: #e74c3c;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            margin-left: 10px;
+        }
+        .message-list {
+            margin-top: 20px;
+        }
+        .message-item {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #fff;
+            transition: box-shadow 0.3s ease;
+        }
+        .message-item:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+        .message-item.unread {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+        }
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .message-subject {
+            font-weight: bold;
+            color: #2c3e50;
+            flex-grow: 1;
+        }
+        .message-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
+        .message-content {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+            word-break: break-word;
+        }
+        .message-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.3s ease;
+        }
+        .btn-read {
+            background-color: #3498db;
+            color: white;
+        }
+        .btn-read:hover {
+            background-color: #2980b9;
+        }
+        .btn-delete {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .btn-delete:hover {
+            background-color: #c0392b;
+        }
+        .btn-refresh {
+            background-color: #2ecc71;
+            color: white;
+            margin-bottom: 20px;
+        }
+        .btn-refresh:hover {
+            background-color: #27ae60;
+        }
+        .no-messages {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        .pagination {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .pagination button {
+            background-color: #ecf0f1;
+            color: #2c3e50;
+        }
+        .pagination button:hover {
+            background-color: #bdc3c7;
+        }
+        .pagination button.active {
+            background-color: #3498db;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>消息管理 <span id="unread-count" class="unread-count">0</span></h1>
+        
+        <button id="refresh-btn" class="btn-refresh">刷新消息列表</button>
+        
+        <div class="message-list" id="message-list">
+            <div class="no-messages">加载中...</div>
+        </div>
+        
+        <div class="pagination" id="pagination">
+            <!-- 分页按钮将在这里动态生成 -->
+        </div>
+    </div>
+
+    <script>
+        const messagesPerPage = 10;
+        let currentPage = 1;
+        let allMessages = [];
+        
+        // 获取所有消息
+        function fetchMessages() {
+            fetch('/api/messages')
+                .then(response => response.json())
+                .then(data => {
+                    allMessages = data.messages || [];
+                    updateUnreadCount();
+                    renderMessages();
+                    renderPagination();
+                })
+                .catch(error => {
+                    console.error('获取消息失败:', error);
+                    document.getElementById('message-list').innerHTML = '<div class="no-messages">获取消息失败，请稍后再试</div>';
+                });
+        }
+        
+        // 更新未读消息数量
+        function updateUnreadCount() {
+            const unreadCount = allMessages.filter(msg => !msg.read).length;
+            document.getElementById('unread-count').textContent = unreadCount;
+        }
+        
+        // 渲染消息列表
+        function renderMessages() {
+            const messageList = document.getElementById('message-list');
+            
+            if (allMessages.length === 0) {
+                messageList.innerHTML = '<div class="no-messages">暂无消息</div>';
+                return;
+            }
+            
+            // 分页逻辑
+            const startIndex = (currentPage - 1) * messagesPerPage;
+            const endIndex = Math.min(startIndex + messagesPerPage, allMessages.length);
+            const paginatedMessages = allMessages.slice(startIndex, endIndex);
+            
+            // 按时间倒序排列（最新的在前）
+            paginatedMessages.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            let html = '';
+            paginatedMessages.forEach(message => {
+                const isUnread = !message.read;
+                const timestamp = new Date(message.timestamp).toLocaleString('zh-CN');
+                
+                html += `
+                    <div class="message-item ${isUnread ? 'unread' : ''}" data-id="${message.id}">
+                        <div class="message-header">
+                            <div class="message-subject">${message.subject || '无主题'}</div>
+                            <div class="message-meta">
+                                <div>${message.name}</div>
+                                <div>${message.email}</div>
+                                <div>${timestamp}</div>
+                            </div>
+                        </div>
+                        <div class="message-content">${message.message}</div>
+                        <div class="message-actions">
+                            ${isUnread ? `<button class="btn-read" onclick="markAsRead(${message.id})">标记为已读</button>` : ''}
+                            <button class="btn-delete" onclick="deleteMessage(${message.id})">删除</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            messageList.innerHTML = html;
+        }
+        
+        // 渲染分页按钮
+        function renderPagination() {
+            const pagination = document.getElementById('pagination');
+            const totalPages = Math.ceil(allMessages.length / messagesPerPage);
+            
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+            
+            let html = '';
+            
+            // 上一页按钮
+            html += `<button ${currentPage === 1 ? 'disabled' : ''} onclick="goToPage(${currentPage - 1})">&laquo; 上一页</button>`;
+            
+            // 页码按钮
+            for (let i = 1; i <= totalPages; i++) {
+                html += `<button class="${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+            }
+            
+            // 下一页按钮
+            html += `<button ${currentPage === totalPages ? 'disabled' : ''} onclick="goToPage(${currentPage + 1})">&raquo; 下一页</button>`;
+            
+            pagination.innerHTML = html;
+        }
+        
+        // 跳转到指定页码
+        function goToPage(page) {
+            currentPage = page;
+            renderMessages();
+            renderPagination();
+        }
+        
+        // 标记消息为已读
+        function markAsRead(messageId) {
+            fetch(`/api/messages/${messageId}/read`, {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // 更新本地数据
+                    const message = allMessages.find(msg => msg.id === messageId);
+                    if (message) {
+                        message.read = true;
+                    }
+                    updateUnreadCount();
+                    renderMessages();
+                } else {
+                    alert('标记失败: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('标记失败:', error);
+                alert('标记失败，请稍后再试');
+            });
+        }
+        
+        // 删除消息
+        function deleteMessage(messageId) {
+            if (confirm('确定要删除这条消息吗？')) {
+                fetch(`/api/messages/${messageId}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // 更新本地数据
+                        allMessages = allMessages.filter(msg => msg.id !== messageId);
+                        updateUnreadCount();
+                        
+                        // 如果当前页没有消息了，返回上一页
+                        if (allMessages.length > 0 && 
+                            (currentPage - 1) * messagesPerPage >= allMessages.length) {
+                            currentPage--;
+                        }
+                        
+                        renderMessages();
+                        renderPagination();
+                    } else {
+                        alert('删除失败: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('删除失败:', error);
+                    alert('删除失败，请稍后再试');
+                });
+            }
+        }
+        
+        // 初始加载消息
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchMessages();
+            
+            // 刷新按钮点击事件
+            document.getElementById('refresh-btn').addEventListener('click', fetchMessages);
+        });
+    </script>
+</body>
+</html>
