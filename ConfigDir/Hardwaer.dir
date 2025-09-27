@@ -1,1 +1,45 @@
-["MainCode","../MainCode"]
+{
+  "version": "1.0",
+  "hardware": {
+    "cpu": {
+      "enabled": true,
+      "core_count": 0,
+      "usage_threshold": 80
+    },
+    "gpu": {
+      "enabled": false,
+      "device_id": 0,
+      "memory_threshold": 70
+    },
+    "disk": {
+      "enabled": true,
+      "monitor_paths": [
+        "c:/",
+        "d:/"
+      ],
+      "space_threshold": 20
+    },
+    "memory": {
+      "enabled": true,
+      "usage_threshold": 75
+    }
+  },
+  "sensors": {
+    "enabled": false,
+    "refresh_interval": 60
+  },
+  "control": {
+    "auto_shutdown": {
+      "enabled": false,
+      "idle_time": 180
+    },
+    "temperature_monitor": {
+      "enabled": false,
+      "warning_threshold": 65
+    }
+  },
+  "logging": {
+    "level": "INFO",
+    "file": "c:/Users/Administrator/Documents/GitHub/CompearProject/HardwareCode/logs/hardware.log"
+  }
+}

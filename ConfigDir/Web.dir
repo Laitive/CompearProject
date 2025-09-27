@@ -1,3 +1,42 @@
-{["templates"],["../templates"]}
-{["staic"],["../staic"]}
-{["main"],["../MainCode"]}
+{
+  "version": "1.0",
+  "server": {
+    "host": "0.0.0.0",
+    "port": 8000,
+    "debug": false,
+    "threaded": true,
+    "max_workers": 4
+  },
+  "paths": {
+    "static": "c:/Users/Administrator/Documents/GitHub/CompearProject/staic",
+    "templates": "c:/Users/Administrator/Documents/GitHub/CompearProject/templates/htmls",
+    "upload": "c:/Users/Administrator/Documents/GitHub/CompearProject/picture/Picture",
+    "api_base": "/api/v1"
+  },
+  "security": {
+    "cors": {
+      "enabled": true,
+      "allowed_origins": ["*"],
+      "allowed_methods": ["GET", "POST", "PUT", "DELETE"],
+      "allowed_headers": ["Content-Type", "Authorization"]
+    },
+    "csrf_protection": false,
+    "session_timeout": 3600
+  },
+  "logging": {
+    "level": "INFO",
+    "file": "c:/Users/Administrator/Documents/GitHub/CompearProject/WEB/web.main/logs/web.log",
+    "access_log": true
+  },
+  "database": {
+    "enabled": false,
+    "type": "sqlite",
+    "path": "c:/Users/Administrator/Documents/GitHub/CompearProject/WEB/web.main/data/web.db"
+  },
+  "features": {
+    "authentication": false,
+    "chat": true,
+    "file_upload": true,
+    "api_docs": false
+  }
+}

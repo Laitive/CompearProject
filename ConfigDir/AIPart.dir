@@ -1,3 +1,26 @@
-{["dlls"],["../dlls"]}
-{["DLL.AI"],["../DLL.AI/importDLL.py"]}
-{["Messages.AI"],["../Messages.AI/messagesheader.py"]}
+{
+  "version": "1.0",
+  "ai_provider": "volcano",
+  "api_key": "",
+  "model": "doubao-1-5-pro-32k-250115",
+  "base_url": "https://ark.cn-beijing.volces.com/api/v3",
+  "timeout": 120,
+  "max_retries": 2,
+  "modules": {
+    "chat": {
+      "enabled": true,
+      "system_prompt": "你是一个智能助手，能够回答各种问题并提供帮助。"
+    },
+    "text_generation": {
+      "enabled": true,
+      "max_tokens": 2000
+    },
+    "embedding": {
+      "enabled": false
+    }
+  },
+  "logging": {
+    "level": "INFO",
+    "file": "c:/Users/Administrator/Documents/GitHub/CompearProject/Messages.AI/ai.log"
+  }
+}
